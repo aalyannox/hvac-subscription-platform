@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoolAir HVAC Services</title>
+    <style>
+        /* ... existing styles ... */
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .subscription-manager {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+            display: block;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .subscription-manager h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .subscription-manager input,
+        .subscription-manager select,
+        .subscription-manager button {
+            margin: 10px 0;
+            padding: 8px;
+            display: block;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        .subscription-manager button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .subscription-manager button:hover {
+            background-color: #45a049;
+        }
+        #subscriptionStatus {
+            margin-top: 15px;
+            font-weight: bold;
+            color: #333;
+            background-color: #e8e8e8;
+            padding: 10px;
+            border-radius: 3px;
+        }
+    </style>
+    <script>
+        class SubscriptionManager {
+            constructor() {
+                this.subscriptions = new Map();
+            }
+
+            createSubscription(userId, plan, duration) {
+                if (!userId || !plan || !duration) {
+                    throw new Error('Invalid input: All fields are required');
+                }
+
+                if (typeof userId !== 'string' || typeof plan !== 'string' || typeof duration !== 'number') {
+                    throw new Error('Invalid input types');
+                }
+
+                if (duration <= 0) {
+                    throw new Error('Duration must be a positive number');
+                }
+
+                if (this.subscriptions.has(userId)) {
+                    throw new Error('User already has an active subscription');
+                }
+
+                const subscription = {
+                    plan,
+                    duration,
+                    startDate: new Date(),
+                    active: true
+                };
+
+                this.subscriptions.set(userId, subscription);
+                return subscription;
+            }
+
+            modifySubscription(userId, newPlan, newDuration) {
+                if (!this.subscriptions.has(userId)) {
+                    throw new Error('No active subscription found for this user');
+                }
+
+                if (!newPlan && !newDuration) {
+                    throw new Error('At least one field (plan or duration) must be provided for modification');
+                }
+
+                const subscription = this.subscriptions.get(userId);
+
+                if (newPlan) {
+                    if (typeof newPlan !== 'string') {
+                        throw new Error('Invalid plan type');
+                    }
+                    subscription.plan = newPlan;
+                }
+
+                if (newDuration) {
+                    if (typeof newDuration !== 'number' || newDuration <= 0) {
+                        throw new Error('Invalid duration');
+                    }
+                    subscription.duration = newDuration;
+                }
+
+                this.subscriptions.set(userId, subscription);
+                return subscription;
+            }
+
+            cancelSubscription(userId) {
+                if (!this.subscriptions.has(userId)) {
+                    throw new Error('No active subscription found for this user');
+                }
+
+                const subscription = this.subscriptions.get(userId);
+                subscription.active = false;
+                this.subscriptions.set(userId, subscription);
+                return { message: 'Subscription cancelled successfully' };
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const subscriptionManager = new SubscriptionManager();
+            const subscriptionStatus = document.getElementById('subscriptionStatus');
+            const createSubscriptionBtn = document.getElementById('createSubscription');
+            const modifySubscriptionBtn = document.getElementById('modifySubscription');
+            const cancelSubscriptionBtn = document.getElementById('cancelSubscription');
+
+            function updateUI(message) {
+                subscriptionStatus.textContent = message;
+            }
+
+            createSubscriptionBtn.addEventListener('click', function() {
+                try {
+                    const userId = document.getElementById('userId').value;
+                    const plan = document.getElementById('plan').value;
+                    const duration = parseInt(document.getElementById('duration').value);
+                    const newSubscription = subscriptionManager.createSubscription(userId, plan, duration);
+                    updateUI(`Subscription created: ${JSON.stringify(newSubscription)}`);
+                } catch (error) {
+                    updateUI(`Error: ${error.message}`);
+                }
+            });
+
+            modifySubscriptionBtn.addEventListener('click', function() {
+                try {
+                    const userId = document.getElementById('userId').value;
+                    const newPlan = document.getElementById('newPlan').value;
+                    const newDuration = parseInt(document.getElementById('newDuration').value);
+                    const modifiedSubscription = subscriptionManager.modifySubscription(userId, newPlan, newDuration);
+                    updateUI(`Subscription modified: ${JSON.stringify(modifiedSubscription)}`);
+                } catch (error) {
+                    updateUI(`Error: ${error.message}`);
+                }
+            });
+
+            cancelSubscriptionBtn.addEventListener('click', function() {
+                try {
+                    const userId = document.getElementById('userId').value;
+                    const result = subscriptionManager.cancelSubscription(userId);
+                    updateUI(result.message);
+                } catch (error) {
+                    updateUI(`Error: ${error.message}`);
+                }
+            });
+        });
+    </script>
+</head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoolAir HVAC Services</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+        }
+        header {
+            background: #35424a;
+            color: #ffffff;
+            padding-top: 30px;
+            min-height: 70px;
+            border-bottom: #e8491d 3px solid;
+        }
+        header a {
+            color: #ffffff;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-size: 16px;
+        }
+        header ul {
+            padding: 0;
+            list-style: none;
+        }
+        header li {
+            display: inline;
+            padding: 0 20px;
+        }
+        header #branding {
+            float: left;
+        }
+        header #branding h1 {
+            margin: 0;
+        }
+        header nav {
+            float: right;
+            margin-top: 10px;
+        }
+        .highlight, header .current a {
+            color: #e8491d;
+            font-weight: bold;
+        }
+        #showcase {
+            min-height: 400px;
+            background: url('https://example.com/hvac-background.jpg') no-repeat center center/cover;
+            text-align: center;
+            color: #ffffff;
+        }
+        #showcase h1 {
+            margin-top: 100px;
+            font-size: 55px;
+            margin-bottom: 10px;
+        }
+        #showcase p {
+            font-size: 20px;
+        }
+        #services {
+            margin-top: 20px;
+        }
+        #services .box {
+            float: left;
+            width: 30%;
+            padding: 10px;
+            text-align: center;
+        }
+        #pricing {
+            background: #f4f4f4;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        #pricing .price-box {
+            float: left;
+            width: 30%;
+            padding: 10px;
+            text-align: center;
+        }
+        .button {
+            display: inline-block;
+            background: #e8491d;
+            color: #ffffff;
+            padding: 10px 20px;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+        @media(max-width: 768px) {
+            header #branding,
+            header nav,
+            header nav li,
+            #services .box,
+            #pricing .price-box {
+                float: none;
+                text-align: center;
+                width: 100%;
+            }
+            header {
+                padding-bottom: 20px;
+            }
+        }
+    </style>
+    <script>
+        class SubscriptionManager {
+            constructor() {
+                this.subscriptions = new Map();
+            }
+
+            createSubscription(userId, plan, duration) {
+                if (!userId || !plan || !duration) {
+                    throw new Error('Invalid input: All fields are required');
+                }
+
+                if (typeof userId !== 'string' || typeof plan !== 'string' || typeof duration !== 'number') {
+                    throw new Error('Invalid input types');
+                }
+
+                if (duration <= 0) {
+                    throw new Error('Duration must be a positive number');
+                }
+
+                if (this.subscriptions.has(userId)) {
+                    throw new Error('User already has an active subscription');
+                }
+
+                const subscription = {
+                    plan,
+                    duration,
+                    startDate: new Date(),
+                    active: true
+                };
+
+                this.subscriptions.set(userId, subscription);
+                return subscription;
+            }
+
+            modifySubscription(userId, newPlan, newDuration) {
+                if (!this.subscriptions.has(userId)) {
+                    throw new Error('No active subscription found for this user');
+                }
+
+                if (!newPlan && !newDuration) {
+                    throw new Error('At least one field (plan or duration) must be provided for modification');
+                }
+
+                const subscription = this.subscriptions.get(userId);
+
+                if (newPlan) {
+                    if (typeof newPlan !== 'string') {
+                        throw new Error('Invalid plan type');
+                    }
+                    subscription.plan = newPlan;
+                }
+
+                if (newDuration) {
+                    if (typeof newDuration !== 'number' || newDuration <= 0) {
+                        throw new Error('Invalid duration');
+                    }
+                    subscription.duration = newDuration;
+                }
+
+                this.subscriptions.set(userId, subscription);
+                return subscription;
+            }
+
+            cancelSubscription(userId) {
+                if (!this.subscriptions.has(userId)) {
+                    throw new Error('No active subscription found for this user');
+                }
+
+                const subscription = this.subscriptions.get(userId);
+                subscription.active = false;
+                this.subscriptions.set(userId, subscription);
+                return { message: 'Subscription cancelled successfully' };
+            }
+
+            getSubscription(userId) {
+                if (!this.subscriptions.has(userId)) {
+                    throw new Error('No subscription found for this user');
+                }
+
+                return this.subscriptions.get(userId);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const subscriptionManager = new SubscriptionManager();
+            const subscriptionStatus = document.getElementById('subscriptionStatus');
+
+            function updateUI(message) {
+                subscriptionStatus.textContent = message;
+            }
+
+            document.getElementById('createSubscription').addEventListener('click', function() {
+                try {
+                    const userId = document.getElementById('userId').value;
+                    const plan = document.getElementById('plan').value;
+                    const duration = parseInt(document.getElementById('duration').value);
+                    const newSubscription = subscriptionManager.createSubscription(userId, plan, duration);
+                    updateUI(`Subscription created: ${JSON.stringify(newSubscription)}`);
+                } catch (error) {
+                    updateUI(`Error: ${error.message}`);
+                }
+            });
+
+            document.getElementById('modifySubscription').addEventListener('click', function() {
+                try {
+                    const userId = document.getElementById('userId').value;
+                    const newPlan = document.getElementById('newPlan').value;
+                    const newDuration = parseInt(document.getElementById('newDuration').value);
+                    const modifiedSubscription = subscriptionManager.modifySubscription(userId, newPlan, newDuration);
+                    updateUI(`Subscription modified: ${JSON.stringify(modifiedSubscription)}`);
+                } catch (error) {
+                    updateUI(`Error: ${error.message}`);
+                }
+            });
+
+            document.getElementById('cancelSubscription').addEventListener('click', function() {
+                try {
+                    const userId = document.getElementById('userId').value;
+                    const result = subscriptionManager.cancelSubscription(userId);
+                    updateUI(result.message);
+                } catch (error) {
+                    updateUI(`Error: ${error.message}`);
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div id="branding">
+                <h1><span class="highlight">CoolAir</span> HVAC Services</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li class="current"><a href="#home">Home</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section id="showcase">
+        <div class="container">
+            <h1 style="color: #35424a;">Professional HVAC Solutions</h1>
+            <p style="color: #35424a;">We provide top-quality heating, ventilation, and air conditioning services for your home and business.</p>
+        </div>
+    </section>
+
+    <section id="services">
+        <div class="container">
+            <h2 style="text-align: center;">Our Services</h2>
+            <div style="display: flex; justify-content: center; flex-wrap: wrap;">
+                <div class="box" style="text-align: center; flex: 1; margin: 10px;">
+                    <h3>Heating</h3>
+                    <p>Expert installation and repair of furnaces, heat pumps, and boilers.</p>
+                </div>
+                <div class="box" style="text-align: center; flex: 1; margin: 10px;">
+                    <h3>Cooling</h3>
+                    <p>Efficient air conditioning systems for your comfort in hot weather.</p>
+                </div>
+                <div class="box" style="text-align: center; flex: 1; margin: 10px;">
+                    <h3>Ventilation</h3>
+                    <p>Improve indoor air quality with our advanced ventilation solutions.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="pricing">
+        <div class="container">
+            <h2 style="text-align: center;">Our Pricing</h2>
+            <div style="display: flex; justify-content: center; flex-wrap: wrap;">
+                <div class="price-box" style="text-align: center; flex: 1; margin: 10px;">
+                    <h3>Basic Service</h3>
+                    <p>Starting at $99</p>
+                    <div class="service-list">
+                        <p>System Inspection</p>
+                        <p>Filter Replacement</p>
+                        <p>Basic Cleaning</p>
+                    </div>
+                </div>
+                <div class="price-box" style="text-align: center; flex: 1; margin: 10px;">
+                    <h3>Comprehensive Service</h3>
+                    <p>Starting at $199</p>
+                    <div class="service-list">
+                        <p>Full System Tune-up</p>
+                        <p>Duct Cleaning</p>
+                        <p>Refrigerant Check</p>
+                    </div>
+                </div>
+                <div class="price-box" style="text-align: center; flex: 1; margin: 10px;">
+                    <h3>Installation</h3>
+                    <p>Custom Quote</p>
+                    <div class="service-list">
+                        <p>New System Installation</p>
+                        <p>System Upgrades</p>
+                        <p>Energy Efficiency Consultation</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="cta">
+        <div class="container">
+            <div style="text-align: center;">
+                <h2>Ready to Get Started?</h2>
+                <p>Sign up for a free consultation and estimate today!</p>
+                <a href="#" class="button">Sign Up Now</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p style="text-align: center;">&copy; 2023 CoolAir HVAC Services. All rights reserved.</p>
+    </footer>
+</body>
+</html>
